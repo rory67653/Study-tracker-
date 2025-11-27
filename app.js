@@ -245,29 +245,67 @@ function calcOverallPercent() {
 function renderSubjects() {
   const container = document.getElementById("subjects-container");
   if (!container) return;
+
   container.innerHTML = "";
 
   SUBJECTS.forEach(subject => {
-    const pct = calcSubjectPercent(subject.code);
-
     const card = document.createElement("div");
     card.className = "subject-card";
 
+    // Header
     const header = document.createElement("div");
     header.className = "subject-header";
 
-    const titleBox = document.createElement("div");
     const title = document.createElement("div");
     title.className = "subject-title";
-    title.textContent = subject.name;
+    title.textContent = `${subject.code} - ${subject.name}`;
+
     const code = document.createElement("div");
     code.className = "subject-code";
     code.textContent = subject.code;
-    titleBox.appendChild(title);
-    titleBox.appendChild(code);
 
-    header.appendChild(titleBox);
+    header.appendChild(title);
+    header.appendChild(code);
     card.appendChild(header);
+
+    // Subtopics container
+    const subtopicContainer = document.createElement("div");
+    subtopicContainer.className = "subtopics";
+    subtopicContainer.style.display = "none"; // hidden by default
+
+    const topics = state.subtopics[subject.code] || [];
+    topics.forEach((topic, idx) => {
+      const row = document.createElement("div");
+      row.className = "subtopic-row";
+
+      const name = document.createElement("div");
+      name.className = "subtopic-name";
+      name.textContent = topic.name;
+
+      const stars = document.createElement("div");
+      stars.className = "stars";
+
+      for (let s = 1; s <= 5; s++) {
+        const star = document.createElement("span");
+        star.className = "star" + (topic.rating >= s ? " active" : "");
+        star.innerHTML = "★";
+        star.addEventListener("click", () => {
+          handleStarClick(subject.code, idx, s);
+        });
+        stars.appendChild(star);
+      }
+
+      row.appendChild(name);
+      row.appendChild(stars);
+      subtopicContainer.appendChild(row);
+    });
+
+    card.appendChild(subtopicContainer);
+
+    // Toggle subtopics on click
+    header.addEventListener("click", () => {
+      subtopicContainer.style.display = subtopicContainer.style.display === "none" ? "flex" : "none";
+    });
 
     container.appendChild(card);
   });
