@@ -242,7 +242,6 @@ function calcOverallPercent() {
   if (!total) return 0;
   return (mastered / total) * 100;
 }
-
 function renderSubjects() {
   const container = document.getElementById("subjects-container");
   if (!container) return;
