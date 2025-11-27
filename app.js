@@ -16,7 +16,6 @@ const SUBJECTS = [
   { code: "090", name: "Communications" }
 ];
 
-// Real subtopics per subject
 const SUBJECT_SUBTOPICS = {
   "010": [
     "01001 International Law: Conventions, Agreements, Organizations",
@@ -63,9 +62,88 @@ const SUBJECT_SUBTOPICS = {
     "022-14 Maintenance, Monitoring and Recording Systems",
     "022-15 Digital Circuits and Computers"
   ],
-  // ...other subjects omitted for brevity, include all like before
+  "031": [
+    "031-01 Purpose of Mass and Balance Considerations",
+    "031-02 Loading",
+    "031-04 Mass and Balance Details of Aircraft",
+    "031-05 Determination of CG Position",
+    "031-06 Cargo Handling"
+  ],
+  "032": [
+    "032-01 General",
+    "032-02 (C2.23A) Applicable Operational Requirements Performance Class B – Theory",
+    "032-03 (C2.23A) Applicable Operational Requirements Performance Class B – Use of Aeroplane Performance Data for Single and Multi-engine Aeroplanes",
+    "032-04 (C5.25A) Applicable Operational Requirements Performance Class A – Theory",
+    "032-05 (C5.25A) Applicable Operational Requirements Performance Class A – Use of Aeroplane Performance Data"
+  ]
 };
+// Remaining SUBJECT_SUBTOPICS
+Object.assign(SUBJECT_SUBTOPICS, {
+  "033": [
+    "033-01 Flight Planning for VFR Flights",
+    "033-02 Flight Planning for IFR Flights",
+    "033-03 Fuel Planning – CAT.OP.MPA.106 and CAT.OP.MPA.150 plus AMC1, 2 and 3",
+    "033-04 Pre-flight Preparation",
+    "033-05 ICAO Flight Plan (ATS Flight Plan (FPL))",
+    "033-06 Flight Monitoring and In-flight Re-planning"
+  ],
+  "040": [
+    "040-01 Human Factors Basic Concepts",
+    "040-02 Basics of Aviation Physiology and Health Maintenance",
+    "040-03 Basic Aviation Psychology"
+  ],
+  "050": [
+    "050-01 The Atmosphere",
+    "050-02 Wind",
+    "050-03 Thermodynamics",
+    "050-04 Clouds and Fog",
+    "050-05 Precipitation",
+    "050-06 Air Masses and Fronts",
+    "050-07 Pressure Systems",
+    "050-08 Climatology",
+    "050-09 Flight Hazards",
+    "050-10 Meteorological Information"
+  ],
+  "061": [
+    "061-01 Basics of Navigation",
+    "061-02 Visual Flight Rules (VFR) Navigation",
+    "061-03 Great Circles and Rhumb Lines",
+    "061-04 Charts",
+    "061-05 Time"
+  ],
+  "062": [
+    "062-01 Basic Radio Propagation Theory",
+    "062-02 Radio Aids",
+    "062-03 Radar",
+    "062-06 Global Navigation Satellite Systems (GNSSs)",
+    "062-07 Performance Based Navigation (PBN)"
+  ],
+  "070": [
+    "071-01 General Requirements",
+    "071-02 Special Operational Procedures and Hazards (General Aspects)",
+    "071-04 Specialised Operations"
+  ],
+  "081": [
+    "081-01 Subsonic Aerodynamics",
+    "081-02 High Speed Aerodynamics",
+    "081-03 Stability, Mach Tuck and Upset Prevention and Recovery",
+    "081-04 Stability",
+    "081-05 Control",
+    "081-06 Limitations",
+    "081-07 Propellers",
+    "081-08 Flight Mechanics"
+  ],
+  "090": [
+    "090-01 Concepts",
+    "090-02 General Operating Procedures",
+    "090-03 Relevant Weather Information",
+    "090-04 Voice Communication Failure",
+    "090-05 VHF Propagation and Allocation of Frequencies",
+    "090-07 Other Communications"
+  ]
+});
 
+// ====== STORAGE & STATE ======
 const STORAGE_KEY = "rory_atpl_tracker_v1";
 const START_DATE = new Date("2025-12-01");
 const END_DATE = new Date("2026-09-30");
@@ -90,22 +168,18 @@ let state = {
   lastStudyDate: null
 };
 
-// ====== UTIL & STATE ======
-
+// ====== UTILITIES ======
 function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (raw) {
     try { state = JSON.parse(raw); } catch (e) { console.error("State parse error", e); }
   }
-
-  // initialise each subject with its real subtopics if missing
   SUBJECTS.forEach(s => {
     const names = SUBJECT_SUBTOPICS[s.code] || [];
     if (!state.subtopics[s.code]) {
       state.subtopics[s.code] = names.map(name => ({ name, rating: 0 }));
     }
   });
-
   if (!Array.isArray(state.studyDays)) state.studyDays = [];
   if (!state.events) state.events = {};
 }
@@ -137,7 +211,6 @@ function dateToISO(d) {
 }
 
 // ====== QUOTES ======
-
 function pickDailyQuote() {
   const todayISO = dateToISO(new Date());
   let sum = 0;
@@ -146,8 +219,8 @@ function pickDailyQuote() {
   const el = document.getElementById("daily-quote");
   if (el) el.textContent = QUOTES[idx];
 }
-// ====== TABS ======
 
+// ====== TABS ======
 function initTabs() {
   const buttons = document.querySelectorAll(".tab-button");
   const tabs = document.querySelectorAll(".tab-content");
@@ -166,9 +239,7 @@ function initTabs() {
     });
   });
 }
-
 // ====== SUBJECTS & STARS ======
-
 function renderSubjects() {
   const container = document.getElementById("subjects-container");
   if (!container) return;
@@ -213,17 +284,12 @@ function renderSubjects() {
 
     const dash = 2 * Math.PI * 21;
     val.style.strokeDasharray = dash;
-    const offset = dash * (1 - pct / 100);
-    val.style.strokeDashoffset = offset;
+    val.style.strokeDashoffset = dash * (1 - pct / 100);
 
     const rootStyle = getComputedStyle(document.documentElement);
-    if (pct < 34) {
-      val.style.stroke = rootStyle.getPropertyValue("--circle-red") || "#ef4444";
-    } else if (pct < 67) {
-      val.style.stroke = rootStyle.getPropertyValue("--circle-orange") || "#f59e0b";
-    } else {
-      val.style.stroke = rootStyle.getPropertyValue("--circle-green") || "#10b981";
-    }
+    if (pct < 34) val.style.stroke = rootStyle.getPropertyValue("--circle-red") || "#ef4444";
+    else if (pct < 67) val.style.stroke = rootStyle.getPropertyValue("--circle-orange") || "#f59e0b";
+    else val.style.stroke = rootStyle.getPropertyValue("--circle-green") || "#10b981";
 
     svg.appendChild(bg);
     svg.appendChild(val);
@@ -293,7 +359,6 @@ function handleStarClick(subjectCode, topicIndex, starValue) {
 }
 
 // ====== STREAK & STUDY DAYS ======
-
 function recordStudyDay() {
   const todayISO = dateToISO(new Date());
   if (!state.studyDays.includes(todayISO)) state.studyDays.push(todayISO);
@@ -312,9 +377,8 @@ function updateStreak() {
   const last = new Date(state.lastStudyDate);
   const diffDays = Math.round((today - last) / (1000 * 60 * 60 * 24));
 
-  if (diffDays === 0) {
-    return;
-  } else if (diffDays === 1) {
+  if (diffDays === 0) return;
+  else if (diffDays === 1) {
     state.streak += 1;
     state.lastStudyDate = todayISO;
   } else {
@@ -323,8 +387,7 @@ function updateStreak() {
   }
 }
 
-// ====== STATS & WEEKLY GOAL ======
-
+// ====== WEEKLY GOAL ======
 function updateStatsOverview() {
   const daysEl = document.getElementById("stat-days-studied");
   const streakEl = document.getElementById("stat-streak");
@@ -346,6 +409,8 @@ function updateStatsOverview() {
   } else {
     statusEl.textContent = `This week: ${state.weeklyMastered}/${state.weeklyGoal} subtopics mastered.`;
   }
+
+  updateCountdown();
 }
 
 function initWeeklyGoal() {
@@ -366,7 +431,6 @@ function initWeeklyGoal() {
 }
 
 // ====== GRAPH ======
-
 let graphCtx;
 let currentGraphSubject = "overall";
 
@@ -419,7 +483,7 @@ function updateGraph() {
   const today = new Date();
   const todayIndex = Math.max(0, Math.min(totalDays, daysBetween(START_DATE, today)));
 
-  // Axes
+  // axes
   graphCtx.strokeStyle = "#30415f";
   graphCtx.lineWidth = 1;
   graphCtx.beginPath();
@@ -428,7 +492,7 @@ function updateGraph() {
   graphCtx.lineTo(width - 10, height - 20);
   graphCtx.stroke();
 
-  // Target line
+  // target line
   graphCtx.strokeStyle = "#6b7280";
   graphCtx.lineWidth = 1.2;
   graphCtx.beginPath();
@@ -441,9 +505,8 @@ function updateGraph() {
   }
   graphCtx.stroke();
 
-  // Actual progress
+  // actual progress
   let pctNow = currentGraphSubject === "overall" ? calcOverallPercent() : calcSubjectPercent(currentGraphSubject);
-
   graphCtx.strokeStyle = "#1f8ffd";
   graphCtx.lineWidth = 2;
   graphCtx.beginPath();
@@ -458,208 +521,174 @@ function updateGraph() {
   graphCtx.arc(actualX, actualY, 3, 0, Math.PI * 2);
   graphCtx.fill();
 }
-// ====== CALENDAR ======
 
-let selectedDate = null;
+// ====== CALENDAR & EVENTS ======
+let calendarCurrent = new Date();
+let calendarSelectedISO = null;
 
 function initCalendar() {
-  const grid = document.getElementById("calendar-grid");
-  const monthYear = document.getElementById("calendar-month-year");
+  const subjectSelect = document.getElementById("event-subject");
+  if (!subjectSelect) return;
+
+  subjectSelect.innerHTML = "";
+  SUBJECTS.forEach(s => {
+    const o = document.createElement("option");
+    o.value = s.code;
+    o.textContent = `${s.code} - ${s.name}`;
+    subjectSelect.appendChild(o);
+  });
+
   const prevBtn = document.getElementById("prev-month");
   const nextBtn = document.getElementById("next-month");
-
-  if (!grid || !monthYear || !prevBtn || !nextBtn) return;
-
-  const today = new Date();
-  let currentMonth = today.getMonth();
-  let currentYear = today.getFullYear();
-
-  function renderCalendar() {
-    grid.innerHTML = "";
-    const firstDay = new Date(currentYear, currentMonth, 1);
-    const lastDay = new Date(currentYear, currentMonth + 1, 0);
-
-    // Day headers
-    ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(d => {
-      const div = document.createElement("div");
-      div.className = "calendar-day-header";
-      div.textContent = d;
-      grid.appendChild(div);
-    });
-
-    // Empty cells before first day
-    for (let i = 0; i < firstDay.getDay(); i++) {
-      const empty = document.createElement("div");
-      empty.className = "calendar-day";
-      grid.appendChild(empty);
-    }
-
-    // Days
-    for (let d = 1; d <= lastDay.getDate(); d++) {
-      const dateStr = dateToISO(new Date(currentYear, currentMonth, d));
-      const dayDiv = document.createElement("div");
-      dayDiv.className = "calendar-day";
-      dayDiv.dataset.date = dateStr;
-
-      const num = document.createElement("div");
-      num.className = "calendar-day-number";
-      num.textContent = d;
-      dayDiv.appendChild(num);
-
-      if (state.events[dateStr]) {
-        const dot = document.createElement("div");
-        dot.className = "calendar-event-dot";
-        dayDiv.appendChild(dot);
-      }
-
-      dayDiv.addEventListener("click", () => {
-        selectedDate = dateStr;
-        renderEvents();
-        document.querySelectorAll(".calendar-day").forEach(cd => cd.classList.remove("selected"));
-        dayDiv.classList.add("selected");
-      });
-
-      grid.appendChild(dayDiv);
-    }
-
-    monthYear.textContent = `${firstDay.toLocaleString("default", { month: "long" })} ${currentYear}`;
-  }
-
-  prevBtn.addEventListener("click", () => {
-    currentMonth--;
-    if (currentMonth < 0) {
-      currentMonth = 11;
-      currentYear--;
-    }
+  if (prevBtn) prevBtn.addEventListener("click", () => {
+    calendarCurrent.setMonth(calendarCurrent.getMonth() - 1);
+    renderCalendar();
+  });
+  if (nextBtn) nextBtn.addEventListener("click", () => {
+    calendarCurrent.setMonth(calendarCurrent.getMonth() + 1);
     renderCalendar();
   });
 
-  nextBtn.addEventListener("click", () => {
-    currentMonth++;
-    if (currentMonth > 11) {
-      currentMonth = 0;
-      currentYear++;
-    }
-    renderCalendar();
-  });
+  const saveBtn = document.getElementById("save-event");
+  const delBtn = document.getElementById("delete-event");
+  if (saveBtn) saveBtn.addEventListener("click", saveEvent);
+  if (delBtn) delBtn.addEventListener("click", deleteEvent);
 
   renderCalendar();
-  renderEvents();
 }
 
-// ====== EVENTS ======
+function renderCalendar() {
+  const monthYearEl = document.getElementById("calendar-month-year");
+  const grid = document.getElementById("calendar-grid");
+  if (!monthYearEl || !grid) return;
 
-function renderEvents() {
+  grid.innerHTML = "";
+
+  const year = calendarCurrent.getFullYear();
+  const month = calendarCurrent.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const firstWeekday = firstDay.getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const monthName = firstDay.toLocaleString("default", { month: "long" });
+  monthYearEl.textContent = `${monthName} ${year}`;
+
+  const weekdays = ["S", "M", "T", "W", "T", "F", "S"];
+  weekdays.forEach(w => {
+    const h = document.createElement("div");
+    h.className = "calendar-day-header";
+    h.textContent = w;
+    grid.appendChild(h);
+  });
+
+  for (let i = 0; i < firstWeekday; i++) grid.appendChild(document.createElement("div"));
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dayEl = document.createElement("div");
+    dayEl.className = "calendar-day";
+
+    const num = document.createElement("div");
+    num.className = "calendar-day-number";
+    num.textContent = d;
+    dayEl.appendChild(num);
+
+    const dateISO = dateToISO(new Date(year, month, d));
+    if (state.events && state.events[dateISO]) {
+      const dot = document.createElement("div");
+      dot.className = "calendar-event-dot";
+      dayEl.appendChild(dot);
+    }
+    if (calendarSelectedISO === dateISO) dayEl.classList.add("selected");
+
+    dayEl.addEventListener("click", () => {
+      calendarSelectedISO = dateISO;
+      renderCalendar();
+      loadEventDetails();
+    });
+
+    grid.appendChild(dayEl);
+  }
+}
+
+function loadEventDetails() {
   const label = document.getElementById("selected-date-label");
-  const subjectSelect = document.getElementById("event-subject");
-  const notesInput = document.getElementById("event-notes");
+  const notes = document.getElementById("event-notes");
+  const subject = document.getElementById("event-subject");
   const list = document.getElementById("events-list");
+  if (!label || !notes || !subject || !list) return;
 
-  if (!label || !subjectSelect || !notesInput || !list) return;
-
-  if (!selectedDate) {
+  if (!calendarSelectedISO) {
     label.textContent = "Select a date";
-    subjectSelect.innerHTML = "";
-    notesInput.value = "";
+    notes.value = "";
     list.innerHTML = "";
     return;
   }
 
-  label.textContent = `Events on ${selectedDate}`;
-  subjectSelect.innerHTML = "";
-
-  SUBJECTS.forEach(s => {
-    const opt = document.createElement("option");
-    opt.value = s.code;
-    opt.textContent = `${s.code} - ${s.name}`;
-    subjectSelect.appendChild(opt);
-  });
-
-  const eventsForDay = state.events[selectedDate] || [];
-  if (eventsForDay[0]) subjectSelect.value = eventsForDay[0].subject;
-  notesInput.value = eventsForDay[0] ? eventsForDay[0].notes : "";
-
-  list.innerHTML = "";
-  eventsForDay.forEach((e, idx) => {
-    const li = document.createElement("li");
-    li.textContent = `${e.subject}: ${e.notes}`;
-    list.appendChild(li);
-  });
+  label.textContent = `Events on ${calendarSelectedISO}`;
+  const ev = state.events ? state.events[calendarSelectedISO] : null;
+  if (ev) {
+    subject.value = ev.subjectCode;
+    notes.value = ev.notes || "";
+    list.innerHTML = `<li>${ev.subjectCode} - ${ev.notes || "Exam"}</li>`;
+  } else {
+    notes.value = "";
+    list.innerHTML = "<li>No exams saved for this date.</li>";
+  }
 }
 
 function saveEvent() {
-  if (!selectedDate) return;
-  const subjectSelect = document.getElementById("event-subject");
-  const notesInput = document.getElementById("event-notes");
-  if (!subjectSelect || !notesInput) return;
-
-  const subject = subjectSelect.value;
-  const notes = notesInput.value.trim();
-  if (!state.events[selectedDate]) state.events[selectedDate] = [];
-  state.events[selectedDate] = [{ subject, notes }];
+  if (!calendarSelectedISO) return;
+  const subjectCode = document.getElementById("event-subject").value;
+  const notes = document.getElementById("event-notes").value.trim();
+  if (!state.events) state.events = {};
+  state.events[calendarSelectedISO] = { subjectCode, notes };
   saveState();
   renderCalendar();
-  renderEvents();
-  updateCountdown();
+  loadEventDetails();
 }
 
 function deleteEvent() {
-  if (!selectedDate || !state.events[selectedDate]) return;
-  delete state.events[selectedDate];
-  saveState();
+  if (!calendarSelectedISO) return;
+  if (state.events && state.events[calendarSelectedISO]) {
+    delete state.events[calendarSelectedISO];
+    saveState();
+  }
   renderCalendar();
-  renderEvents();
-  updateCountdown();
+  loadEventDetails();
 }
 
 // ====== COUNTDOWN ======
-
 function updateCountdown() {
-  const container = document.getElementById("upcoming-exam-countdown");
-  if (!container) return;
+  const countdownEl = document.getElementById("exam-countdown");
+  if (!countdownEl) return;
 
   const today = new Date();
-  let closest = null;
-  let minDiff = Infinity;
-
-  Object.keys(state.events).forEach(dateStr => {
-    const date = new Date(dateStr);
-    const diff = date - today;
-    if (diff >= 0 && diff < minDiff) {
-      minDiff = diff;
-      closest = { date, info: state.events[dateStr][0] };
-    }
-  });
-
-  if (!closest) {
-    container.textContent = "No upcoming exams";
+  const futureExams = Object.keys(state.events || {}).map(d => new Date(d)).filter(d => d >= today);
+  if (!futureExams.length) {
+    countdownEl.textContent = "No upcoming exams";
     return;
   }
 
-  const days = Math.floor(minDiff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((minDiff / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((minDiff / (1000 * 60)) % 60);
-  const seconds = Math.floor((minDiff / 1000) % 60);
+  const nextExam = futureExams.sort((a, b) => a - b)[0];
+  const diff = nextExam - today;
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const mins = Math.floor((diff / (1000 * 60)) % 60);
 
-  container.textContent = `Next exam: ${closest.info.subject} in ${days}d ${hours}h ${minutes}m ${seconds}s`;
+  countdownEl.textContent = `Next exam in ${days}d ${hours}h ${mins}m`;
+  setTimeout(updateCountdown, 60000); // refresh every minute
 }
 
-// ====== INITIALIZATION ======
-
-function initApp() {
+// ====== INIT ======
+function init() {
   loadState();
+  pickDailyQuote();
   initTabs();
   initWeeklyGoal();
   renderSubjects();
-  updateStatsOverview();
   initGraph();
   initCalendar();
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-
-  document.getElementById("save-event")?.addEventListener("click", saveEvent);
-  document.getElementById("delete-event")?.addEventListener("click", deleteEvent);
+  updateStatsOverview();
 }
 
-// Start the app
-initApp();
+document.addEventListener("DOMContentLoaded", init);
