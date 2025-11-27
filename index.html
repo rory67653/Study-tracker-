@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Rory ATPL Study Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>Rory ATPL Study Tracker</h1>
+    <p id="daily-quote" class="quote-box" aria-live="polite"></p>
+  </header>
+
+  <nav class="tab-nav" role="tablist" aria-label="Primary">
+    <button class="tab-button active" data-tab="home" role="tab" aria-selected="true">Home</button>
+    <button class="tab-button" data-tab="subjects" role="tab" aria-selected="false">Subjects</button>
+    <button class="tab-button" data-tab="calendar" role="tab" aria-selected="false">Exam Calendar</button>
+    <button class="tab-button" data-tab="parents" role="tab" aria-selected="false">For Momo and Papa</button>
+  </nav>
+
+  <main>
+    <!-- HOME TAB -->
+    <section id="home" class="tab-content visible" role="tabpanel" aria-labelledby="home-tab">
+      <section class="stats-overview">
+        <div class="stat-card">
+          <span class="stat-label">Days studied</span>
+          <span id="stat-days-studied" class="stat-value">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Current streak</span>
+          <span id="stat-streak" class="stat-value">0🔥</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Subjects mastered</span>
+          <span id="stat-subjects-mastered" class="stat-value">0/13</span>
+        </div>
+      </section>
+
+      <!-- Upcoming Exam Countdown -->
+      <section class="countdown">
+        <h2>Upcoming Exam</h2>
+        <p id="upcoming-exam-countdown" class="countdown-text">Loading...</p>
+      </section>
+
+      <section class="graph-section">
+        <div class="graph-header">
+          <h2>Progress Graph</h2>
+          <label for="graph-subject-select">View:</label>
+          <select id="graph-subject-select"></select>
+        </div>
+        <canvas id="progress-graph" width="600" height="260" aria-label="Progress graph"></canvas>
+        <p class="graph-caption">
+          Showing progress from December 2025 to September 2026 with target line.
+        </p>
+      </section>
+    </section>
+
+    <!-- SUBJECTS TAB -->
+    <section id="subjects" class="tab-content" role="tabpanel" aria-labelledby="subjects-tab">
+      <section class="subjects-list">
+        <div id="subjects-container"></div>
+      </section>
+    </section>
+
+    <!-- CALENDAR TAB -->
+    <section id="calendar" class="tab-content" role="tabpanel" aria-labelledby="calendar-tab">
+      <section class="calendar-header">
+        <h2>Exam Calendar</h2>
+        <div class="calendar-controls">
+          <button id="prev-month">&lt;</button>
+          <span id="calendar-month-year"></span>
+          <button id="next-month">&gt;</button>
+        </div>
+      </section>
+
+      <section class="calendar-grid" id="calendar-grid">
+        <!-- Calendar days injected by app.js -->
+      </section>
+
+      <section class="calendar-details">
+        <h3 id="selected-date-label">Select a date</h3>
+        <label>
+          Subject:
+          <select id="event-subject"></select>
+        </label>
+        <label>
+          Notes:
+          <textarea id="event-notes" rows="2" placeholder="Exam type, time, room, etc."></textarea>
+        </label>
+        <div class="calendar-buttons">
+          <button id="save-event">Save / Update</button>
+          <button id="delete-event" class="danger">Delete</button>
+        </div>
+        <ul id="events-list"></ul>
+      </section>
+    </section>
+
+    <!-- PARENTS TAB -->
+    <section id="parents" class="tab-content" role="tabpanel" aria-labelledby="parents-tab">
+      <section class="parents-section">
+        <h2>For Momo and Papa</h2>
+        <p class="parents-intro">
+          This page shows Rory’s ATPL study progress. Each bar shows how many subtopics in that subject have been mastered (rated 5★).
+        </p>
+        <div id="parents-progress"></div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>Data stored locally on this device and synced to Firebase.</p>
+  </footer>
+
+  <noscript>
+    <div style="padding:1rem; text-align:center; background:#ffeeba; color:#333;">
+      This app requires JavaScript. Please enable it to use the tracker.
+    </div>
+  </noscript>
+
+  <!-- Firebase CDN (compat version) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
