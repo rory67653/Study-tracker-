@@ -1,0 +1,178 @@
+:root{
+  --bg-1: #1e3c72;
+  --bg-2: #2a5298;
+  --card-bg: rgba(255,255,255,0.12);
+  --circle-red: #ef4444;
+  --circle-orange: #f59e0b;
+  --circle-green: #10b981;
+  --accent: #1f8ffd;
+  --muted: rgba(255,255,255,0.7);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
+  color: white;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app-header {
+  text-align: center;
+  padding: 2rem 1rem 1rem;
+}
+
+.app-header h1 {
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+  margin-bottom: 0.5rem;
+}
+
+.quote-box {
+  font-style: italic;
+  opacity: 0.95;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+/* NAV / TABS */
+.tab-nav {
+  display: flex;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(6px);
+}
+
+.tab-button {
+  flex: 1;
+  padding: 0.85rem;
+  border: none;
+  background: transparent;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.tab-button.active {
+  background: rgba(255,255,255,0.12);
+}
+
+/* content panels */
+.tab-content {
+  display: none;
+  padding: 1.25rem;
+  max-width: 980px;
+  margin: 0 auto 2rem;
+}
+
+.tab-content.visible {
+  display: block;
+}
+
+/* stats */
+.stats-overview {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  background: var(--card-bg);
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  text-align: center;
+  min-width: 140px;
+  flex: 1;
+}
+
+.stat-label {
+  display:block;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+/* weekly goal */
+.weekly-goal {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.weekly-goal input {
+  width: 60%;
+  padding: 0.45rem;
+  font-size: 1rem;
+  margin-right: 0.5rem;
+  border: none;
+  border-radius: 5px;
+}
+
+.weekly-goal button {
+  padding: 0.45rem 0.9rem;
+  font-size: 1rem;
+  background-color: rgba(255,255,255,0.06);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* graph */
+.graph-section { margin-top: 1rem; }
+.graph-header { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem; }
+#progress-graph { width:100%; max-width:100%; height:auto; background:transparent; display:block; border-radius:8px; }
+
+/* subjects */
+.subjects-list { margin-top: 0.75rem; }
+#subjects-container { display:grid; gap:0.9rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.subject-card {
+  background: rgba(255,255,255,0.06);
+  padding: 0.9rem;
+  border-radius: 10px;
+  transition: transform 0.12s, background 0.12s;
+}
+.subject-header { display:flex; justify-content:space-between; align-items:center; gap:0.5rem; margin-bottom:0.5rem; }
+.subject-title { font-weight:700; }
+.subject-code { font-size:0.85rem; color:var(--muted); }
+
+/* circular progress svg area */
+.progress-circle { display:flex; align-items:center; gap:0.6rem; }
+.progress-circle svg { width:48px; height:48px; }
+.progress-bg { fill: none; stroke: rgba(255,255,255,0.08); stroke-width:3; }
+.progress-value { fill:none; stroke-width:3; stroke-linecap:round; transform: rotate(-90deg); transform-origin: 24px 24px; transition: stroke-dashoffset 0.5s ease; }
+.progress-text { font-size:0.9rem; font-weight:600; }
+
+/* subtopics */
+.subtopics { margin-top:0.5rem; display:flex; flex-direction:column; gap:0.4rem; }
+.subtopic-row { display:flex; justify-content:space-between; align-items:center; }
+.subtopic-name { color:var(--muted); }
+.stars .star { cursor:pointer; opacity:0.45; user-select:none; margin-left:2px; }
+.stars .star.active { opacity:1; color: gold; }
+
+/* calendar */
+.calendar-grid { display:grid; grid-template-columns: repeat(7, 1fr); gap:6px; margin:10px 0 1rem; }
+.calendar-day, .calendar-day-header { padding:6px; min-height:56px; border-radius:6px; background: rgba(255,255,255,0.02); }
+.calendar-day-number { font-weight:600; margin-bottom:6px; color:var(--muted); }
+.calendar-event-dot { width:8px; height:8px; background:var(--accent); border-radius:50%; margin-top:4px; }
+.calendar-day.selected { outline: 2px solid rgba(255,255,255,0.12); }
+
+.calendar-details { background: rgba(255,255,255,0.02); padding:0.7rem; border-radius:6px; }
+
+/* small screens */
+@media (max-width:640px){
+  .stats-overview { flex-direction: column; align-items:center; }
+  .weekly-goal input { width: 68%; }
+}
